@@ -14,6 +14,9 @@
   const BRICK_HEIGHT = 30;
   const BALL_RADIUS = 8;
 	const FULL_X_SPEED = 7;
+	const VK_LEFT = 37;
+	const VK_RIGHT = 39;
+	const VK_SPACE = 32;
   //variaveis
   var stage;
   var paddle;
@@ -22,17 +25,77 @@
 	var score = 0;
 	var lives = 3;
 	var scoreText;
+	var gameStarted = false;
+	var keyboardMoveLeft = false;
+	var keyboardMoveRight = false;
 
 		function init()
 		{
 			stage = new createjs.Stage("demoCanvas");
 			createjs.Ticker.setFPS(60);
 			createjs.Ticker.addEventListener("tick", tick);
+			//os objetos são criados de forma ordenada e linear
 			createScoreText();
 			addToScore(0);
-			createBrickGrid();
-			createBall();
 			createPaddle();
+			createBall();
+			createBrickGrid();
+
+			window.onkeyup = keyUpHandler;
+			window.onkeydown = keyDownHandler;
+
+			stage.on("stagemousemove",function(event)
+			{
+				paddle.x = stage.mouseX;
+			});
+
+			stage.on("stagemousedown",function(event)
+			{
+				startLevel();
+			});
+		}
+
+		function startLevel()
+		{
+			if (!gameStarted)
+			{
+				gameStarted=true;
+				ball.xSpeed = 5;
+				ball.ySpeed = 5;
+				ball.up = true;
+				ball.right = true;
+			}
+		}
+
+		function keyDownHandler(e) //recebe evento como parâmetro
+		{
+			switch (e.keyCode)
+			{
+				case VK_LEFT:
+				keyboardMoveLeft = true;
+				break;
+				case VK_RIGHT:
+				keyboardMoveRight = true;
+				break;
+				case VK_SPACE:
+				startLevel();
+				break;
+				//default:
+			}
+		}
+
+		function keyUpHandler(e)
+		{
+			switch (e.keyCode)
+			{
+				case VK_LEFT:
+				keyboardMoveLeft = false;
+				break;
+				case VK_RIGHT:
+				keyboardMoveRight = false;
+				break;
+				//default:
+			}
 		}
 
 		function loseLife()
@@ -43,6 +106,7 @@
 			ball.ySpeed = 0; //após perder zera velocidade da bola no eixo y
 			ball.x = paddle.x; //retorna bola em cima da raquete
 			ball.y = paddle.y - PADDLE_HEIGHT/2 - BALL_RADIUS; //dessa forma garante-se que fique exatamente no meio
+			gameStarted = false;
 		}
 
 		function createScoreText()
@@ -60,7 +124,28 @@
 
 		function tick()
 		{
-				stage.update();
+			//Comando que em cada frame atualiza raquete com a posição do mouse -> paddle.x = stage.mouseX;
+			stage.update();
+
+				if(keyboardMoveLeft) paddle.x -= 10; //velocidade da raquete
+				if(keyboardMoveRight) paddle.x += 10; //velocidade da raquete
+
+				if(paddle.x+PADDLE_WIDTH/2>stage.canvas.width)
+				{
+						paddle.x = stage.canvas.width - PADDLE_WIDTH/2;
+				}
+				if(paddle.x-PADDLE_WIDTH/2<0)
+				{
+						paddle.x = PADDLE_WIDTH/2;
+				}
+
+				if(!gameStarted)
+				{
+						ball.x = paddle.x;
+						ball.y = paddle.y - PADDLE_HEIGHT/2 - BALL_RADIUS;
+						stage.update();
+						return;
+				}
 
 				if(ball.up)	{
     			ball.y -= ball.ySpeed;
@@ -218,14 +303,14 @@
 		{
       ball = new createjs.Shape();
       ball.graphics.beginFill('#D3D3D3').drawCircle(0,0,BALL_RADIUS);
-      ball.x = stage.canvas.width/2;
-      ball.y = stage.canvas.height/2;
+      ball.x = paddle.x; //stage.canvas.width/2;
+      ball.y = paddle.y - PADDLE_HEIGHT/2 - BALL_RADIUS; //stage.canvas.height/2;
 			stage.addChild(ball);
 			// Adicionando atributos
    		ball.up = true;
    		ball.right = true;
-   		ball.xSpeed = 5;
-   		ball.ySpeed = 5;
+   		ball.xSpeed = 0;
+   		ball.ySpeed = 0;
    		ball.lastX = 0;
    		ball.lastY = 0;
     }

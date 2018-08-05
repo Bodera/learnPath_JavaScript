@@ -1,6 +1,6 @@
 <html>
 <head>
-	<title>Lorem stage</title>
+	<title>Ipsum Play</title>
 	<script src="https://code.createjs.com/createjs-2015.11.26.min.js"></script>
 </head>
 <body onload="init();">
@@ -12,47 +12,175 @@
   const PADDLE_HEIGHT = 20;
   const BRICK_WIDTH = 60;
   const BRICK_HEIGHT = 30;
-	const BALL_RADIUS = 8;
+  const BALL_RADIUS = 8;
+	const FULL_X_SPEED = 7;
   //variaveis
   var stage;
   var paddle;
   var ball;
-	var bricks = [];
+  var bricks = [];
+	var score = 0;
+	var lives = 3;
+	var scoreText;
 
-		function init(){
-	    stage = new createjs.Stage("demoCanvas");
-      createjs.Ticker.setFPS(60);
-      createjs.Ticker.addEventListener("tick", tick);
-      createBrickGrid();
-      createBall();
-      createPaddle();
+		function init()
+		{
+			stage = new createjs.Stage("demoCanvas");
+			createjs.Ticker.setFPS(60);
+			createjs.Ticker.addEventListener("tick", tick);
+			createScoreText();
+			addToScore(0);
+			createBrickGrid();
+			createBall();
+			createPaddle();
 		}
 
-		function tick(){
-			stage.update();
+		function loseLife()
+		{
+			lives--;//decrementando número de vidas
+			scoreText.text = "Score: "+score+" / Lives: "+lives;
+			ball.xSpeed = 0; //após perder zera velocidade da bola no eixo x
+			ball.ySpeed = 0; //após perder zera velocidade da bola no eixo y
+			ball.x = paddle.x; //retorna bola em cima da raquete
+			ball.y = paddle.y - PADDLE_HEIGHT/2 - BALL_RADIUS; //dessa forma garante-se que fique exatamente no meio
+		}
 
-			if(ball.up){
+		function createScoreText()
+		{
+			scoreText = new createjs.Text("","16px Times New Roman","#8d3b30");  //Valor padrão vazio, tamanho + fonte, cor em hexdeciml
+			scoreText.y = stage.canvas.height - 16; //posicionando no fim da página (canvas.height) e subtraindo o tamanho do txt (16px)
+			stage.addChild(scoreText); //aqui ele foi definitivamente criado
+		}
+
+		function addToScore(points)
+		{
+				score += points; //idem placar = placar + pontos
+				scoreText.text = "Score: "+score+" / Lives: "+lives; //atualiza placar concatenando os valores pontos e vidas
+		}
+
+		function tick()
+		{
+				stage.update();
+
+				if(ball.up)	{
     			ball.y -= ball.ySpeed;
 				}
-			else {
-				ball.y += ball.ySpeed;
+				else {
+					ball.y += ball.ySpeed;
+				}
+
+				if(ball.right) {
+					ball.x += ball.xSpeed;
+				}
+				else {
+					ball.x -= ball.xSpeed;
+				}
+
+				for(var i=0; i<bricks.length; i++) //laço para verificar situação do jogo enquanto houverem blocos
+				{
+					if (checkCollision(ball, bricks[i])) //condição se bola acertou o bloco
+					{
+							addToScore(100); //acrescenta 100 pontos ao placar
+     					destroyBrick(bricks[i]); //elimina o bloco atingido
+							bricks.splice(i,1); //
+							i--; //
+    				}
+   		 }
+			 // Bola tocou na raquete?
+			 if(checkCollision(ball,paddle)) {
+				 newBallXSpeedAfterCollision(ball, paddle);
+			 }
+
+			 // Agora vamos checar se a bola tocou as paredes
+			 	if(ball.x+BALL_RADIUS>=stage.canvas.width)
+			  {
+					ball.x = stage.canvas.width-BALL_RADIUS;
+					ball.right = false;
+			  }
+
+				if(ball.x-BALL_RADIUS<=0)
+				{
+					ball.x = BALL_RADIUS;
+					ball.right = true;
+				}
+
+				if(ball.y-BALL_RADIUS<=0)
+				{
+					ball.y = BALL_RADIUS;
+					ball.up = false;
+				}
+
+				if(ball.y+BALL_RADIUS>=stage.canvas.height)
+				{
+					loseLife();
+					/*ball.y =stage.canvas.height-BALL_RADIUS;
+					ball.up = true;*/
+				}
+
+				ball.lastX = ball.x;
+				ball.lastY = ball.y;
+		}
+
+		function checkCollision(ballElement, hitElement)
+		{
+			var leftBorder = (hitElement.x - hitElement.getBounds().width/2);
+			var rightBorder = (hitElement.x + hitElement.getBounds().width/2);
+			var topBorder = (hitElement.y - hitElement.getBounds().height/2);
+			var bottomBorder = (hitElement.y + hitElement.getBounds().height/2);
+			var previousBallLeftBorder = ballElement.lastX - BALL_RADIUS;
+			var previousBallRightBorder = ballElement.lastX + BALL_RADIUS;
+			var previousBallTopBorder = ballElement.lastY - BALL_RADIUS;
+			var previousBallBottomBorder = ballElement.lastY + BALL_RADIUS;
+			var ballLeftBorder = ballElement.x - BALL_RADIUS;
+			var ballRightBorder = ballElement.x + BALL_RADIUS;
+			var ballTopBorder = ballElement.y - BALL_RADIUS;
+			var ballBottomBorder = ballElement.y + BALL_RADIUS;
+
+			if( (ballLeftBorder <= rightBorder)&&(ballRightBorder >= leftBorder)&&
+	   			(ballTopBorder <= bottomBorder)&&(ballBottomBorder >= topBorder))
+			{
+				if((ballTopBorder <= bottomBorder)&&(previousBallTopBorder > bottomBorder)) {
+					ballElement.up = false;
+					ballElement.y = bottomBorder + BALL_RADIUS;
 			}
 
+			if((ballBottomBorder >= topBorder)&&(previousBallBottomBorder < topBorder)) {
+				ballElement.up = true;
+				ballElement.y = topBorder - BALL_RADIUS;
+		}
 
-   		for(var i=0; i<bricks.length; i++){
-    		if checkCollision(ball, bricks[i]){
-     				destroyBrick(bricks[i]);
-    				}
-   			}
-  	}
-   function checkCollision(ballElement, brickElement){
-    if(ballElement.x + BALL_RADIUS <= brickElement.x - BRICK_WIDTH/2 ||
-      ballElement.x - BALL_RADIUS >= brickElement.x + BRICK_WIDTH/2 ||
-       ballElement.y + BALL_RADIUS <= brickElement.y - BRICK_HEIGHT/2 ||
-      ballElement.y - BALL_RADIUS >= brickElement.y + BRICK_HEIGHT/2)return false;
+			if((ballLeftBorder <= rightBorder)&&(previousBallLeftBorder > rightBorder)) {
+				ballElement.right = true;
+				ballElement.x = rightBorder + BALL_RADIUS;
+		}
 
-		return true;
-   }
+			if((ballRightBorder >= leftBorder)&&(previousBallRightBorder < leftBorder)) {
+				ballElement.right = false;
+				ballElement.x = leftBorder - BALL_RADIUS;
+		}
+
+			ballElement.lastX = ballElement.x;
+			ballElement.lastY = ballElement.y;
+			return true;
+	}
+		return false;
+}
+
+		function newBallXSpeedAfterCollision(ballElement,hitElement)
+		 {
+			var startPoint = hitElement.x - hitElement.getBounds().width/2;
+			var midPoint = hitElement.x;
+			var endPoint = hitElement.x + hitElement.getBounds().width/2;
+
+			if(ballElement.x < midPoint) {
+				ball.right = false;
+				ball.xSpeed = FULL_X_SPEED - ((ballElement.x - startPoint) / (midPoint - startPoint))	* FULL_X_SPEED
+			}
+			else {
+				ball.xSpeed = FULL_X_SPEED - ((endPoint - ballElement.x) / (endPoint - midPoint)) * FULL_X_SPEED
+				ball.right = true;
+			}
+		}
 
     function createBrickGrid(){
       for(var i=0; i<14; i++)
@@ -67,45 +195,57 @@
       brick.graphics.drawRect(0, 0, BRICK_WIDTH, BRICK_HEIGHT);
       brick.graphics.endFill();
 
-			brick.x = x;
-			brick.y = y;
-
-			brick.regX = BRICK_WIDTH/2;
+      brick.regX = BRICK_WIDTH/2;
 			brick.regY = BRICK_HEIGHT/2;
+			brick.x=x;
+			brick.y=y;
+			brick.setBounds(brick.regX, brick.regY, BRICK_WIDTH, BRICK_HEIGHT);
 
 			stage.addChild(brick);
 			bricks.push(brick);
     }
 
-    function destroyBrick(brick){
+    function destroyBrick(brick) {
       createjs.Tween.get(brick,{}).to({scaleX:0, scaleY:0}, 500)
+		  setTimeout(removeBrickFromScreen, 500, brick);
     }
 
-    function createBall(){
+		function removeBrickFromScreen(brick) {
+			stage.removeChild(brick);
+		}
+
+    function createBall()
+		{
       ball = new createjs.Shape();
       ball.graphics.beginFill('#D3D3D3').drawCircle(0,0,BALL_RADIUS);
       ball.x = stage.canvas.width/2;
       ball.y = stage.canvas.height/2;
-      stage.addChild(ball);
+			stage.addChild(ball);
 			// Adicionando atributos
    		ball.up = true;
    		ball.right = true;
-   		ball.xSpeed = 0;
-   		ball.ySpeed = 1;
+   		ball.xSpeed = 5;
+   		ball.ySpeed = 5;
    		ball.lastX = 0;
    		ball.lastY = 0;
     }
 
-    function createPaddle(){
+    function createPaddle()
+		{
       paddle = new createjs.Shape();
-      paddle.graphics.beginFill('#00CED1')
-      .drawRect(0,0, PADDLE_WIDTH, PADDLE_HEIGHT);
-      paddle.y = stage.canvas.height*0.9;
-      stage.addChild(paddle);
-      paddle.x = stage.canvas.width/2 - PADDLE_WIDTH/2;
+			paddle.width = PADDLE_WIDTH;
+			paddle.height = PADDLE_HEIGHT;
+			paddle.graphics.beginFill('#00CED1').drawRect(0, 0, paddle.width, paddle.height);
 
+			paddle.x = stage.canvas.width/2 - PADDLE_WIDTH/2;
+			paddle.y = stage.canvas.height*0.9;
+
+			paddle.regX = PADDLE_WIDTH/2;
+			paddle.regY = PADDLE_HEIGHT/2;
+			paddle.setBounds(paddle.regX, paddle.regY, PADDLE_WIDTH, PADDLE_HEIGHT);
+
+			stage.addChild(paddle);
     }
-
 	</script>
-</body>
+ </body>
 </html>

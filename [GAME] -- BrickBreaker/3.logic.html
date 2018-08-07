@@ -8,7 +8,7 @@
 
 	<script>
   // constantes
-  const PADDLE_WIDTH = 100;
+  const PADDLE_WIDTH = 120;
   const PADDLE_HEIGHT = 20;
   const BRICK_WIDTH = 60;
   const BRICK_HEIGHT = 30;
@@ -28,10 +28,27 @@
 	var gameStarted = false;
 	var keyboardMoveLeft = false;
 	var keyboardMoveRight = false;
+	var highScore = 0;
 
-		function init()
+		function init() //essa função carrega tudo que é necessário para o jogo
 		{
+				//essa sequencia de desvios condicionais tem por objetivo o armazenamento Web para persistência de dados
+				if(typeof(Storage) !== "undefined") //se tipo de armazenamento não for indefinido
+				{
+					//armazenamento local permitido pelo navegador
+					if(localStorage.highScore==undefined)
+					{ //verificação a procura de um highScore já existente
+						localStorage.highScore = 0; //se não tiver iguale a 0
+					}
+					highScore = localStorage.highScore; //se tiver adicione o contador ao localStorage
+				}
+				else
+				{
+					highScore = 0;
+				}
+
 			stage = new createjs.Stage("demoCanvas");
+			createjs.Touch.enable(stage); //suporte a eventos touch
 			createjs.Ticker.setFPS(60);
 			createjs.Ticker.addEventListener("tick", tick);
 			//os objetos são criados de forma ordenada e linear
@@ -53,73 +70,82 @@
 			{
 				startLevel();
 			});
+
+			stage.canvas.height = window.innerHeight; //adaptando o tamanho do canvas para mobile
 		}
 
-		function startLevel()
+		function startLevel() //função do começo de cada fase
 		{
-			if (!gameStarted)
+			if (!gameStarted) //desvio condicional se o jogo ainda não tiver começado
 			{
 				gameStarted=true;
-				ball.xSpeed = 5;
-				ball.ySpeed = 5;
-				ball.up = true;
-				ball.right = true;
+				ball.xSpeed = 5; //velocidade da bola no eixo x (horizontal)
+				ball.ySpeed = 5; //velocidade da bola no eixo y (vertical)
+				ball.up = true; //ela decola para cima
+				ball.right = false; //em direção à esquerda
 			}
 		}
 
 		function keyDownHandler(e) //recebe evento como parâmetro
-		{
+		{ //função que detecta quando o jogador pressiona as teclas de ação
 			switch (e.keyCode)
 			{
-				case VK_LEFT:
-				keyboardMoveLeft = true;
-				break;
-				case VK_RIGHT:
-				keyboardMoveRight = true;
-				break;
-				case VK_SPACE:
-				startLevel();
-				break;
+				case VK_LEFT:	keyboardMoveLeft = true; break;
+				case VK_RIGHT: keyboardMoveRight = true; break;
+				case VK_SPACE: startLevel(); break;
 				//default:
 			}
 		}
 
-		function keyUpHandler(e)
-		{
+		function keyUpHandler(e) //também recebe o evento 'e' como parâmetro
+		{ //função que detecta quando o jogador solta as teclas de ação
 			switch (e.keyCode)
 			{
-				case VK_LEFT:
-				keyboardMoveLeft = false;
-				break;
-				case VK_RIGHT:
-				keyboardMoveRight = false;
-				break;
+				case VK_LEFT:	keyboardMoveLeft = false;	break;
+				case VK_RIGHT: keyboardMoveRight = false;	break;
 				//default:
 			}
 		}
 
-		function loseLife()
+		function loseLife() //
 		{
 			lives--;//decrementando número de vidas
-			scoreText.text = "Score: "+score+" / Lives: "+lives;
+			updateStatusLine();
 			ball.xSpeed = 0; //após perder zera velocidade da bola no eixo x
 			ball.ySpeed = 0; //após perder zera velocidade da bola no eixo y
 			ball.x = paddle.x; //retorna bola em cima da raquete
 			ball.y = paddle.y - PADDLE_HEIGHT/2 - BALL_RADIUS; //dessa forma garante-se que fique exatamente no meio
 			gameStarted = false;
+
+				if(lives==0)
+				{
+					if(highScore<score)
+					{
+						highScore = score;
+						localStorage.highScore = score;
+					}
+					lives = 3;
+					score = 0;
+				}
+				updateStatusLine();
 		}
 
-		function createScoreText()
+		function createScoreText() //função que cria linha de texto que exibe informações da pontuação ao usuário
 		{
 			scoreText = new createjs.Text("","16px Times New Roman","#8d3b30");  //Valor padrão vazio, tamanho + fonte, cor em hexdeciml
 			scoreText.y = stage.canvas.height - 16; //posicionando no fim da página (canvas.height) e subtraindo o tamanho do txt (16px)
 			stage.addChild(scoreText); //aqui ele foi definitivamente criado
 		}
 
-		function addToScore(points)
+		function addToScore(points) //função que registra pontos a cada bloco destruído, recebe pontos como parâmetro
 		{
 				score += points; //idem placar = placar + pontos
-				scoreText.text = "Score: "+score+" / Lives: "+lives; //atualiza placar concatenando os valores pontos e vidas
+				updateStatusLine();
+		}
+
+		function updateStatusLine() //função para atualizar informações de pontuação
+		{ //atualiza placar concatenando os valores do número de pontos, vidas e maior placar
+			scoreText.text = "Score: "+score+" / Lives: "+lives+" / High Score: "+highScore;
 		}
 
 		function tick()
@@ -299,6 +325,23 @@
 			stage.removeChild(brick);
 		}
 
+		function createPaddle()
+		{
+			paddle = new createjs.Shape();
+			paddle.width = PADDLE_WIDTH;
+			paddle.height = PADDLE_HEIGHT;
+			paddle.graphics.beginFill('#00CED1').drawRect(0, 0, paddle.width, paddle.height);
+
+			paddle.x = stage.canvas.width/2 - PADDLE_WIDTH/2;
+			paddle.y = stage.canvas.height*0.9;
+
+			paddle.regX = PADDLE_WIDTH/2;
+			paddle.regY = PADDLE_HEIGHT/2;
+			paddle.setBounds(paddle.regX, paddle.regY, PADDLE_WIDTH, PADDLE_HEIGHT);
+
+			stage.addChild(paddle);
+		}
+
     function createBall()
 		{
       ball = new createjs.Shape();
@@ -313,23 +356,6 @@
    		ball.ySpeed = 0;
    		ball.lastX = 0;
    		ball.lastY = 0;
-    }
-
-    function createPaddle()
-		{
-      paddle = new createjs.Shape();
-			paddle.width = PADDLE_WIDTH;
-			paddle.height = PADDLE_HEIGHT;
-			paddle.graphics.beginFill('#00CED1').drawRect(0, 0, paddle.width, paddle.height);
-
-			paddle.x = stage.canvas.width/2 - PADDLE_WIDTH/2;
-			paddle.y = stage.canvas.height*0.9;
-
-			paddle.regX = PADDLE_WIDTH/2;
-			paddle.regY = PADDLE_HEIGHT/2;
-			paddle.setBounds(paddle.regX, paddle.regY, PADDLE_WIDTH, PADDLE_HEIGHT);
-
-			stage.addChild(paddle);
     }
 	</script>
  </body>

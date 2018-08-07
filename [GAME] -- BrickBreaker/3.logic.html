@@ -78,6 +78,7 @@
 		{
 			if (!gameStarted) //desvio condicional se o jogo ainda não tiver começado
 			{
+				console.log("Start Game"); //cada vez que o código chegar aqui, uma linha de log será impressa no console
 				gameStarted=true;
 				ball.xSpeed = 5; //velocidade da bola no eixo x (horizontal)
 				ball.ySpeed = 5; //velocidade da bola no eixo y (vertical)
@@ -109,6 +110,7 @@
 
 		function loseLife() //
 		{
+			console.log("Lost a life"); //cada vez que o código chegar aqui, uma linha de log será impressa no console
 			lives--;//decrementando número de vidas
 			updateStatusLine();
 			ball.xSpeed = 0; //após perder zera velocidade da bola no eixo x
@@ -153,9 +155,16 @@
 			//Comando que em cada frame atualiza raquete com a posição do mouse -> paddle.x = stage.mouseX;
 			stage.update();
 
-				if(keyboardMoveLeft) paddle.x -= 10; //velocidade da raquete
-				if(keyboardMoveRight) paddle.x += 10; //velocidade da raquete
-
+				if(keyboardMoveLeft)
+				{
+					console.log("Keyboard - Left"); //cada vez que o código chegar aqui, uma linha de log será impressa no console
+					paddle.x -= 10; //velocidade da raquete
+				}
+				if(keyboardMoveRight)
+				{
+					console.log("Keyboard - Right"); //cada vez que o código chegar aqui, uma linha de log será impressa no console
+					paddle.x += 10; //velocidade da raquete
+				}
 				if(paddle.x+PADDLE_WIDTH/2>stage.canvas.width)
 				{
 						paddle.x = stage.canvas.width - PADDLE_WIDTH/2;
@@ -192,6 +201,7 @@
 					if (checkCollision(ball, bricks[i])) //condição se bola acertou o bloco
 					{
 							addToScore(100); //acrescenta 100 pontos ao placar
+							console.log("Brick Hit / New Score: "+score);  //imprimindo linha de log no console
      					destroyBrick(bricks[i]); //elimina o bloco atingido
 							bricks.splice(i,1); //
 							i--; //

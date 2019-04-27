@@ -426,8 +426,8 @@ Muito bem, você está evoluindo!
 
 Organize o novo ambiente:
 ```bash
-mkdir 04-lists && mkdir 04-lists/for-forin
-cd 04-lists/for-forin
+mkdir 04-lists && mkdir 04-lists/service
+cd 04-lists/service
 npm init -y
 touch service.js
 ```
@@ -476,13 +476,18 @@ module.exports = {
 
 Ótimo, fizemos nosso próprio módulo em Node.js que atua como um serviço que consome uma API e retorna uma consulta. Vamos criar agora um novo arquivo que irá fazer requisições ao nosso serviço.
 
+```bash
+mkdir 04-lists/for-forin
+cd 04-lists/for-forin
+touch for-forin-forof.js
+```
 ```javascript
 /*
 Objetivo: retornar uma lista dos nomes das personagens de Star Wars
 */
 //modulos criados por nós são importados com um './'
 //arquivos .json também podem ser importados desta forma
-const service = require('./service')
+const service = require('../service/service')
 
 async function main() {
     try {
@@ -550,7 +555,6 @@ execution-time-forof: 0.091ms
 Parabéns, você está ficando mais inteligente!
 
 ### Métodos auxiliares de Arrays
-__Array.map__  
 Prepare seu ambiente
 
 ```bash
@@ -559,5 +563,223 @@ cd maps
 touch map.js
 ```
 
+__Array.prototype.map__ (Retorna um novo array baseado nos parâmetros)
+
 ```javascript
+const service = require('../service/service')
+
+//Substituindo a função global do Map no Node.js
+Array.prototype.meuMap = function (callback) { //tem que ser callback né, pq para cada item que passa pelo loop o objeto é invocado e executa o main()
+    const novoArrayMapeado = []
+    for(let indice=0; indice<= this.length -1; ++indice) {
+        const resultado = callback(this[indice], indice) //this[indice] = nome pessoa; indice é só o índice mesmo
+        novoArrayMapeado.push(resultado)
+    }
+    
+    return novoArrayMapeado;
+}
+
+async function main() {
+    try {
+        const results = await service.obterPessoas('a') //olha minha Promise tem o mesmo nome do objeto da SWAPI
+        
+        /* F O R   E A C H
+        console.time('execution-time-foreach')
+        const names = []
+        //para cada item da lista da SWAPI, uma função será chamada para adicionar o item capturado na variável names
+        results.results.forEach(function (item) {
+            names.push(item.name)
+        })
+        console.timeEnd('execution-time-foreach')
+        */
+        
+        /* M A P
+        console.time('execution-time-map')
+        //Map retorna um Array
+        const names = results.results.map(function (pessoa) {
+            console.log(`names`,names)            
+        })
+        console.timeEnd('execution-time-map')
+        */
+        
+        /* M A P   O P T I M I Z A D O
+        //pessoa é uma função agora por causa do símbolo =>
+        //se esta função recebesse mais de uma parâmetro  // .map((pessoa, peso, altura) => { return pessoa.name, pessoa.height, pessoa.mass })
+        console.time('execution-time-maparrow')
+        const names [] = results.results.map(pessoa => pessoa.name)
+        console.timeEnd('execution-time-maparrow')
+        */
+        
+        // M E U   P R Ó P R I O   M A P
+        console.time('execution-time-meumap')
+         const names = results.results.meuMap(function (pessoa, indice) {
+             return `[${indice}]${pessoa.name}`
+        })
+        console.timeEnd('execution-time-meumap')
+        
+        console.log(`names =`,names)
+    }
+    catch (error) {
+        console.error(`erro interno: `, error)
+        
+    }
+    
+}
+
+main()
+```
+
+__Array.prototype.filter__ (regras de negócio)
+```bash
+mkdir filter
+cd filter
+touch filter.js
+```
+
+```javascript
+//importanto apenas uma função do nosso módulo
+const { obterPessoas } = require('../service/service')
+
+/* D E S T R U C T U R I N G
+ * 
+ * const item = {
+ *     nome: 'Bode'
+ *     idade: '1005'
+ * }
+ * const { nome, idade } = item
+ * console.log(nome, idade) //Bode 1005
+ */
+
+
+// F I L T E R   P R Ó P R I O
+Array.prototype.meuFilter = function(callback) {
+    const lista = []
+    for(index in this) {
+        const item = this[index]
+        const result = callback(item, index, this)
+        //0, "", null, undefined === false
+        if(!result) continue;
+        lista.push(item)
+    }
+    return lista;
+}
+
+async function main() {
+    //Try...catch sempre na última camada que chamada todas as outras
+    try {
+        
+        const {results} = await obterPessoas('')
+        
+        /*
+            //por padrão o filter deve retornar um valor booleano (0 ou 1)
+            //para informar se deve ou não, incluir no novo array da lista
+            //False -> não incluir na lista //True -> inclui na lista
+        const familiaLars = results.filter(function (item) {
+            //item é o parâmetro da nossa função
+            //toLowerCase é a função para padronizar strings para letras minúsculas
+            //indexOf() é uma função legal
+                //seu parâmetro é o valor que buscamos no array
+                //e então a indexOf() retorna a posição do parâmetro no array
+                //quando o parâmetro não existe no array a indexOf() nos retorna -1
+                //e se você quisesse filtrar por todas as personagens exceto os Lars, deveria usar === -1
+            const result = item.name.toLowerCase().indexOf(`lars`) !== -1
+            return result //True ou False
+        })
+        */
+
+
+        const familiaLars = results.meuFilter((item, index, lista) => {
+            console.log(`index: ${index}`, lista.length)
+            return item.name.toLowerCase().indexOf('lars') !== -1
+         })
+        //Código tambem executa //const familiaLars = results.meuFilter((item, index, lista) => item.name.toLowerCase().indexOf('lars') !== -1)
+
+
+        //buscando os nomes das personagens da família Lars. 
+        //O operador => indica que pessoa é uma função e () indica que só recebe 1 único parâmetro
+        const names = familiaLars.map((pessoa) => pessoa.name)
+        console.log(names)
+
+        
+    } catch (error) {
+        console.error('deu ruim: ',error)
+    }
+} 
+main()//sempre a última a ser chamada
+```
+
+__Array.prototype.reduce__ (Consolidar uma coleção de arrays em um único valor)
+```bash
+mkdir reduce
+cd reduce
+touch reduce.js
+```
+
+```javascript
+//importanto apenas uma função do nosso módulo
+const { obterPessoas } = require('../service/service')
+
+
+// R E D U C E   P R Ó P R I O
+Array.prototype.meuReduce = function (callback, valorInicial) {
+
+    let valorFinal = typeof valorInicial !== undefined ? valorInicial : this[0]
+
+    for(let index = 0; index <= this.length -1; index++) {
+        valorFinal = callback(valorFinal, this[index], this) //this é nossa lista completa
+    }
+    return valorFinal;
+}
+
+async function main() {
+
+    try {
+        
+        const {results} = await obterPessoas('')
+        
+        const pesos = results.map((item) => parseFloat(item.height))
+          console.log('pesos: ',pesos)
+        
+        /* Reduce nativo do JS trabalhando dados da SWAPI
+        //colete todos os pesos e faça uma agregação com a soma de todos os valores, caso vazio retorne 0
+        const total = pesos.reduce((anterior, proximo) => {
+            return anterior + proximo
+        }, 0)
+          console.log('total: ',total)
+        */
+
+        //um array de arrays
+        const minhaLista = [
+            ['Rafael', 'Nunes', 'de', 'Brito'],
+            ['Bahia', 'FATEC-ID', 'Brasil Logic Sistemas']
+        ]
+
+        const total = minhaLista.meuReduce((anterior, proximo) => {
+            return anterior.concat(proximo)
+        }, []).join(', ')  //Em hipótese de falso retorne uma lista vazia
+          console.log('total: ',total)
+
+    } 
+    catch (error) {
+          console.error(`Deu ruim: `,error)
+    }
+}
+main()
+```
+
+Vamos continuar estudando.
+### Desenvolvimento de testes automatizados em JavaScript
+Preparando o ambiente e o ciclo de testes
+```bash
+mkdir 05-tests
+cd 05-tests
+mkdir main
+cd main
+npm init -y
+npm i --save axios
+touch tests.js
+```
+
+```javascript
+
 ```

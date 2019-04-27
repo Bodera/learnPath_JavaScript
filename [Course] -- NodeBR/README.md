@@ -769,17 +769,160 @@ main()
 
 Vamos continuar estudando.
 ### Desenvolvimento de testes automatizados em JavaScript
+__Asserções__
+```javascript
+var assert = require('assert')
+
+var atual    = 100
+var esperado = 200
+
+try {
+    assert.equal(esperado, atual, "os valores devem ser iguais")
+} catch(e) {
+    console.log(e) //Muito melhor para debugar, e o código fica lindo.
+}
+```
+
+**Save-dev**
+Nosso ambiente de desenvolvimento é aquele com os pacotes necessários para testarmos as regras de negócio, ao subirmos uma aplicação para a produção ela deve ser a melhor versão possível, enxuta, testada e funcional.
+
 Preparando o ambiente e o ciclo de testes
 ```bash
-mkdir 05-tests
-cd 05-tests
-mkdir main
-cd main
+mkdir 05-tests && cd 05-tests
+mkdir main && cd main
 npm init -y
-npm i --save axios
+npm i axios@^0.18.0
 touch tests.js
+npm i -g mocha
+npm i --save-dev mocha@^6.1.3
+npm i nock@^10.0.6
 ```
 
 ```javascript
+const assert = require('assert')
+const { obterPessoas } = require('./service')
 
+//instalamos o pacote nock, para simularmos requisições
+const nock = require('nock')
+
+describe('Star Wars Tests', function() {
+    //antes de processar a instrução it, deve definir alguma especificação.
+    this.beforeAll( () => {
+        const response = {
+            //assumimos que o objeto retornado pela nossa API sempre manterá essa estrutura
+            //{
+            count:1,
+            next:null,
+            previous:null,
+            results:[
+                {
+                    name:'R2-D2',
+                    height:'96',
+                    mass:'32',
+                    hair_color:'n/a',
+                    skin_color:'white, blue',
+                    eye_color:'red',
+                    birth_year:'33BBY',
+                    gender:'n/a',
+                    homeworld:'https://swapi.co/api/planets/8/',
+                    //conflito de sintaxe
+                    films:[Array],
+                    species:[Array],
+                    vehicles:[],
+                    starships:[],
+                    created:'2014-12-10T15:11:50.376000Z',
+                    edited:'2014-12-20T21:17:50.311000Z',
+                    url:'https://swapi.co/api/people/3/'
+                }
+            ]
+           //}
+        }
+        nock('https://swapi.co/api/people')
+            .get('/?search=r2-d2&format=json')
+            .reply(200, response)
+    })
+    
+    //it('deve buscar o r2d2 com o formato correto', async function () {
+    it('deve buscar pelas informaçãoes do r2d2 no padrão pré-estabelecido', async () => {
+        
+        const expected = [{ //primeiro assert
+            nome : 'R2-D2', 
+            peso: '96'
+        }]
+        
+        
+        const nomeBase = 'r2-d2'
+        try{            
+            assert.deepEqual(nomeBase, 'r2-d2', "o teste eh especifico para buscar pela personagem r2-d2");
+        } catch(e) {
+            //console.log(e)
+            console.log(e.toString())
+        }   
+        
+        const resultado = await obterPessoas(nomeBase)
+        try {
+            //deepEqual() é mais que o equal()
+            assert.deepEqual(resultado, expected)
+        } catch(e) {
+            //console.log(e)
+            console.log(e.toString())
+        }
+            
+        
+    })
+})
+```
+
+Rodou aí aprendiz? Então nosso objetivo daqui pra frente é para que todos os nossos serviços possuam um ambiente de testes para realizarmos a validação das entradas e saídas da nossa API. Até a próxima.
+
+### Utilizando o Node.js para criação de ferramentas de linha de comando (CLI)
+Vamos começar a manipular informações de arquivos usando Node.js sem uma entidade de banco de dados, usando o console para as operações baseadas em CRUD. Nosso objetivo neste módulo será entender que quando consiguimos padronizar as informações de entrada, o critério do ambiente que será utilizado para guardar o resultados das nossas operações torna-se irrelevante, (SQL, NoSQL, arquivos).
+
+__READ__
+Preparando o ambiente
+```bash
+mkdir 06-cli && cd 06-cli
+npm init -y
+touch tests.js
+npm i -g mocha
+npm i --save-dev mocha@^6.1.3
+```
+
+```json
+{
+  "name": "06-cli",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
+
+```
+
+
+```javascript
+//>npm t para executar os testes
+const { deepEqual, ok } = require('assert')
+
+const DEFAULT_ITEM_CADASTRAR = { 
+        nome: 'Flash',
+        poder: 'super-velocidade',
+        id: 1 
+    }
+
+
+//Uma suíte de testes é uma coleção de casos de teste ou specs destinados a testar um programa para verificar um determinado comportamento.
+describe('Suíte de manipulação de Heróis', () => {
+    
+    it('deve cadastrar um herói, usando arquivos', async () => {
+        const expected = { DEFAULT_ITEM_CADASTRAR }
+        //
+        ok(null, expected)
+    })
+})
 ```

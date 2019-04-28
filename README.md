@@ -1,2 +1,2 @@
 # JavaScript
-Aperfeiçoamento em HTML, JS e CSS
+Aperfeiçoamento em JavaScript.

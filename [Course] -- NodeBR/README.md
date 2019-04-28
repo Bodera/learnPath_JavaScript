@@ -873,6 +873,13 @@ describe('Star Wars Tests', function() {
 })
 ```
 
+Comparação do tempo de execução do código de testes.
+```bash
+(1500ms)
+(22ms)
+(39ms)
+```
+
 Rodou aí aprendiz? Então nosso objetivo daqui pra frente é para que todos os nossos serviços possuam um ambiente de testes para realizarmos a validação das entradas e saídas da nossa API. Até a próxima.
 
 ### Utilizando o Node.js para criação de ferramentas de linha de comando (CLI)
@@ -887,7 +894,7 @@ touch tests.js
 npm i -g mocha
 npm i --save-dev mocha@^6.1.3
 ```
-
+Nosso `package.json`.
 ```json
 {
   "name": "06-cli",
@@ -904,10 +911,62 @@ npm i --save-dev mocha@^6.1.3
 
 ```
 
+Criamos nosso arquivo que preservará as fontes dos dados que serão manipulados.
+```javascript
+const {
+    readFile
+} = require('fs') //um callback??!
+const {
+    promisify
+} = require('util') //teamPromisse!!
 
+const readFileAsync = promisify(readFile)
+
+class Database {
+
+        constructor() {
+            this.NOME_ARQUIVO = 'heroi.json'
+        }
+
+        //métodos auxiliares
+        async obterDadosArquivo() {
+            const arquivo = await readFileAsync(this.NOME_ARQUIVO, 'utf8')
+            return JSON.parse(arquivo.toString())
+        }
+        escreverArquivo() {
+
+        }
+
+        //método princial da classe
+        async listar(id) {
+            const dados = await this.obterDadosArquivo()
+            const dadosFiltrados = dados.filter(item => (id ? (item.id === id) : true)) //caso nenhum id seja passado ao chamar a função, traga todos ids.
+
+                return dadosFiltrados
+       }
+}
+
+module.exports = new Database() //exporta a instância para auxiliar arquivos que requisitarem a classe
+
+```
+
+População do arquivo JSON com registro dos heróis.
+```json
+[
+  {
+    "nome": "Flash",
+    "poder": "Super-velocidade",
+    "id": 1
+  }
+]
+```
+
+Criamos nosso arquivo de testes.
 ```javascript
 //>npm t para executar os testes
 const { deepEqual, ok } = require('assert')
+
+const database = require('./database')
 
 const DEFAULT_ITEM_CADASTRAR = { 
         nome: 'Flash',
@@ -919,10 +978,16 @@ const DEFAULT_ITEM_CADASTRAR = {
 //Uma suíte de testes é uma coleção de casos de teste ou specs destinados a testar um programa para verificar um determinado comportamento.
 describe('Suíte de manipulação de Heróis', () => {
     
-    it('deve cadastrar um herói, usando arquivos', async () => {
-        const expected = { DEFAULT_ITEM_CADASTRAR }
-        //
-        ok(null, expected)
+    it('deve pesquisar um herói usando arquivos', async () => {
+        const expected = DEFAULT_ITEM_CADASTRAR //presumi-se que ao menos 1 registro tenha sido previamente cadastrado.
+        const resultado = await database.listar(expected.id)
+        ok(resultado, expected)
     })
+    
+    //it('deve cadastrar um herói usando arquivos', async () => {
+    //    const expected = { DEFAULT_ITEM_CADASTRAR }
+    //    //
+    //    ok(null, expected)
+    //})
 })
 ```

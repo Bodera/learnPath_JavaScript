@@ -1010,3 +1010,10 @@ describe('Suíte de manipulação de Heróis', () => {
     //})
 })
 ```
+Agora vamos prosseguir para o teste de leitura de arquivos. Confira o código lá na pasta. 
+
+Você sabia que pode personalizar o relatório de testes do mocha? Explore os argumentos da CLI do mocha.
+```bash
+mocha --reporter = nyan
+```
+

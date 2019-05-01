@@ -1,7 +1,67 @@
 [
     {
+        "id": 1,
         "nome": "Flash",
-        "poder": "Super-velocidade",
-        "id": 1
+        "poder": "Super-velocidade"
+    },
+    {
+        "id": 1,
+        "nome": "Flash",
+        "poder": "Super-velocidade"
+    },
+    {
+        "id": 1,
+        "nome": "Flash",
+        "poder": "Super-velocidade"
+    },
+    {
+        "id": 1,
+        "nome": "Flash",
+        "poder": "Super-velocidade"
+    },
+    {
+        "id": 1,
+        "nome": "Flash",
+        "poder": "Super-velocidade"
+    },
+    {
+        "id": 1,
+        "nome": "Flash",
+        "poder": "Super-velocidade"
+    },
+    {
+        "id": 1,
+        "nome": "Flash",
+        "poder": "Super-velocidade"
+    },
+    {
+        "id": 1,
+        "nome": "Flash",
+        "poder": "Super-velocidade"
+    },
+    {
+        "id": 2,
+        "nome": "Caçador de Marte",
+        "poder": "Telepatia"
+    },
+    {
+        "id": 1,
+        "nome": "Flash",
+        "poder": "Super-velocidade"
+    },
+    {
+        "id": 2,
+        "nome": "Lanterna Verde",
+        "poder": "Energia do anel"
+    },
+    {
+        "id": 1,
+        "nome": "Flash",
+        "poder": "Super-velocidade"
+    },
+    {
+        "id": 2,
+        "nome": "Caçador de Marte",
+        "poder": "Telepatia"
     }
 ]

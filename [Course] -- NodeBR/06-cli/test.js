@@ -41,6 +41,13 @@ describe('Suíte de manipulação de Heróis', () => {
 
         deepEqual(actual, expected)
     })
+    //run it.only to perfom only one assert. >mocha test.js
+    it('deve remover um herói por id', async () => {
+        const expected = true
+        const resultado = await database.remover(DEFAULT_ITEM_CADASTRAR.id)
+        
+        deepEqual(resultado, expected)
+    })
     it('deve atualizar um herói pelo id', async () => { //a ordem de execução dos testes importa
         const expected_structure = {
             ...DEFAULT_ITEM_ATUALIZAR, //concatenando objetos
@@ -55,12 +62,5 @@ describe('Suíte de manipulação de Heróis', () => {
         await database.atualizar(DEFAULT_ITEM_ATUALIZAR.id, expected_input)
         const [resultado] = await database.listar(DEFAULT_ITEM_ATUALIZAR.id)
         deepEqual(resultado, expected_structure)
-    })
-    //run it.only to perfom only one assert. >mocha test.js
-    it('deve remover um herói por id', async () => {
-        const expected = true
-        const resultado = await database.remover(DEFAULT_ITEM_CADASTRAR.id)
-        
-        deepEqual(resultado, expected)
     })
 })

@@ -35,7 +35,7 @@ class Database {
        async cadastrar(heroi) {
            const dados = await this.obterDadosArquivo()
            //cria um objeto que será concatenado aos dados do heroi para identificação
-           const id = heroi.id <= 2 ? heroi.id : Date.now(); //Propósito educacional e não ilustra as melhores práticas.
+           const id = heroi.id <= 2 ? heroi.id : Date.now(); //Propósito educacional e não ilustra as melhores práticas. Inclusive deu b.o.
 
            const heroiComId = {
                id,

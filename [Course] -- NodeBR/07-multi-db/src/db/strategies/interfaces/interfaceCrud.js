@@ -23,6 +23,11 @@ class ICrud {
     delete(id) {
         throw new NotImplementedException()
     }
+
+    //testa conexão com o banco
+    isConnect() {
+        return this._database.isConnected() //true || false
+    }
 }
 
 //tornando nosso objeto visível para outros serviços JS

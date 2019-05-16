@@ -101,7 +101,55 @@ sudo docker start adminer
 sudo docker start mongodb
 sudo docker start mongoclient
 
-## Introdução ao padrão de design Strategy
+## Introdução ao projeto
 
 Iniciamos um projeto com o `npm init -y`, em seguida criamos a pasta `src` que irá conter todo os códigos de exemplo para seguirmos adiante na implementação dos serviços. Como o projeto será multi banco de dados criamos a pasta `bd` que contém estratégias separadas na pasta `strategies`, arquivos que são reutilizados pelos serviços na pasta `base` e os contratos de implementação para funcionamento da estratégia na pasta `interfaces`.
 
+#### Bancos de dados estruturados
+Seguem uma estrutura fixa, e garantem a consistência do dado. Quando quisermos referenciar uma tabela para localização de um dado iremos consultar o respectivo identificador único da linha propiciando sua reutilização. Assim que as relações são estabelecidas seguimos regras conhecidas: constraint e chaves estrangeiras por exemplo.
+
+Seguindo as boas práticas de programação, vamos então adicionar um método que testa a conexão do nosso serviço ao banco de dados. Altere o seu arquivo `InterfaceCrud.js` para contemplar o seguinte:
+```javascript
+isConnect() {//boolean
+    return this._database.isConnected()
+}
+```
+
+Criamos em seguida a pasta `scripts` dentro da pasta `src`. Iniciamos nosso arquivo `postgresql.sql` da seguinte maneira:
+```sql
+DROP TABLE IF EXISTS TB_HEROIS;
+CREATE TABLE TB_HEROIS (
+    ID INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY NOT NULL,
+    NOME TEXT NOT NULL,
+    PODER TEXT NOT NULL
+)
+```
+Agora acesse o container do Adminer e execute o comando SQL acima.
+
+Para adicionarmos itens, use:
+```sql
+INSERT INTO TB_HEROIS (NOME, PODER)
+VALUES
+    ('Flash', 'Super-velocidade'),
+    ('Batman', 'Dinheiro'),
+    ('Ciborgue', 'Tecnologia')
+```
+E para listar:
+```sql
+SELECT NOME FROM TB_HEROIS;
+SELECT PODER FROM TB_HEROIS WHERE NOME = 'Ciborgue';
+```
+E para atualizar atualizar:
+```sql
+SELECT * FROM TB_HEROIS WHERE ID = 1;
+UPDATE TB_HEROIS
+SET NOME = 'Tocha humana', PODER = 'Fogo'
+WHERE ID = 1;
+SELECT * FROM TB_HEROIS WHERE ID = 1;
+```
+E para remover itens:
+```sql
+DELETE FROM TB_HEROIS WHERE ID = 2;
+SELECT * FROM TB_HEROIS;
+```
+#### Bancos de dados semi-estruturados

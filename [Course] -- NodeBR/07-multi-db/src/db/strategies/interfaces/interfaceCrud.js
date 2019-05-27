@@ -25,8 +25,8 @@ class ICrud {
     }
 
     //testa conexão com o banco
-    isConnect() {
-        return this._database.isConnected() //true || false
+    isConnected() {
+        throw new NotImplementedException()
     }
 }
 

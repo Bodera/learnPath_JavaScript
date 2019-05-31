@@ -4,7 +4,8 @@
   "description": "Use o comando: ```bash sudo docker ps ``` Para listar os containers que estão rodando localmente. Lembre que o run cria um novo container, o start inicializa um já existente.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "tester": "mocha src/tests/*.js",
+    "tester:watch": "mocha src/tests/*.js -w"
   },
   "keywords": [],
   "author": "",

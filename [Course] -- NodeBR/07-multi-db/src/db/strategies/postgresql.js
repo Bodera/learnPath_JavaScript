@@ -7,25 +7,33 @@ class PostgreSQL extends ICrud {
         super()
         this._driver = null
         this._herois = null //base de dados
-        this._connect() // agora quando for instanciada, automaticamente conecta-se ao Postgres.
+        //this._connect() //instanciamos um objeto sem automaticamente estabelecer uma conexão com o sql.
     }
-    //função que valida a tentativa de conexão com o banco. Vai trabalhar com exceção? PROMISE!
-    async isConnected() {
+    
+    async isConnected() { //função que valida a tentativa de conexão com o banco. Vai trabalhar com exceção? PROMISE!
         try {
             await this._driver.authenticate() //método do sequelize
+            console.log('Sucesso na conexão')
             return true
         }
         catch (err) {
-            console.log()
+            console.log('Erro na conexão', err)
             return false // pq é uma promisse
         }
     }
-    create(item) {
+    
+    async create(item) { //essa função cria um registro no banco
         console.log('O item foi salvo em Postgres')
+        return this._herois.create(item, {raw: true}) // :)
     }
-    //função que inicializa a estrutura da tabela para trabalhar
-    async defineModel() {
-        this._herois = driver.define('herois', {
+   
+    async read(item = {}) { //essa função lê um registro no banco //se nenhum parâmetro for passado, recebe vazio
+        console.log('Eis o resultado')
+        return this._herois.findAll( {where: item, raw: true} )
+    }
+
+    async defineModel() { //função que inicializa a estrutura da tabela para trabalhar
+        this._herois = this._driver.define('herois', {
             id: {
                 type: Sequelize.INTEGER,
                 required: true,
@@ -45,10 +53,10 @@ class PostgreSQL extends ICrud {
             freezeTableName: false, //conserva as configurações do banco
             timestamps: false //não adicionar novos atributos
         })
-        await Herois.sync()
+        await this._herois.sync()
     }
     //função que preserva credenciais do servidor de dados 
-    _connect() { //método privado por convenção começa com '_'
+    async connect() { //método privado por convenção começa com '_'
         this._driver = new Sequelize(
             //database name
             'heroes',
@@ -67,6 +75,7 @@ class PostgreSQL extends ICrud {
                 operatorAliases: false
             }
         )
+        await this.defineModel() //para reconhecer os atributos da nossa entidade padrão heroi
     }
 }
 

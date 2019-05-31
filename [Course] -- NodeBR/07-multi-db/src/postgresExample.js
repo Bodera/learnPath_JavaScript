@@ -51,7 +51,7 @@ async function main() {
 
     const resultado = await Herois.findAll({ //método assíncrono
         raw: true
-        //, attributes: ['poder']
+        //, attributes: ['poder'] //descomente e seja feliz.
     })
     console.log('Resultado da consulta:\n', resultado)
  

@@ -32,6 +32,11 @@ class PostgreSQL extends ICrud {
         return this._herois.findAll( {where: item, raw: true} )
     }
 
+    async update(id, item){ //recebe um id e um item para retornar a entidade com seus atributos atualizados
+        console.log('Processando atualização')
+        return this._herois.update(item, { where: {id : id} } )
+    }
+
     async defineModel() { //função que inicializa a estrutura da tabela para trabalhar
         this._herois = this._driver.define('herois', {
             id: {

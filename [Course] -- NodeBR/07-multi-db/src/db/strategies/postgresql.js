@@ -3,7 +3,7 @@ const ICrud = require('./interfaces/interfaceCrud')
 const Sequelize = require('sequelize')
 
 class PostgreSQL extends ICrud {
-    constructor() { //inicializa variáveis
+    constructor(){ //inicializa variáveis
         super()
         this._driver = null
         this._herois = null //base de dados
@@ -11,23 +11,23 @@ class PostgreSQL extends ICrud {
     }
     
     async isConnected() { //função que valida a tentativa de conexão com o banco. Vai trabalhar com exceção? PROMISE!
-        try {
+        try{
             await this._driver.authenticate() //método do sequelize
             console.log('Sucesso na conexão')
             return true
         }
-        catch (err) {
+        catch (err){
             console.log('Erro na conexão', err)
             return false // pq é uma promisse
         }
     }
     
-    async create(item) { //essa função cria um registro no banco
+    async create(item){ //essa função cria um registro no banco
         console.log('O item foi salvo em Postgres')
         return this._herois.create(item, {raw: true}) // :)
     }
    
-    async read(item = {}) { //essa função lê um registro no banco //se nenhum parâmetro for passado, recebe vazio
+    async read(item = {}){ //essa função lê um registro no banco //se nenhum parâmetro for passado, recebe vazio
         console.log('Eis o resultado')
         return this._herois.findAll( {where: item, raw: true} )
     }
@@ -35,6 +35,12 @@ class PostgreSQL extends ICrud {
     async update(id, item){ //recebe um id e um item para retornar a entidade com seus atributos atualizados
         console.log('Processando atualização')
         return this._herois.update(item, { where: {id : id} } )
+    }
+
+    async delete(id){
+        console.log('O registro foi deletado')
+        const query = id ? { id } : {} //passando uma cláusula delete sem where caso o parâmero id não seja passado.
+        return this._herois.destroy({where : query})
     }
 
     async defineModel() { //função que inicializa a estrutura da tabela para trabalhar

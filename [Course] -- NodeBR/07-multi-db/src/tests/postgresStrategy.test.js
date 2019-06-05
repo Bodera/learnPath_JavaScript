@@ -17,9 +17,10 @@ const MOCK_HEROI_ATUALIZAR = { //nosso template de entidade a ser cadastrada no 
     poder: 'Fogo'
 }
 describe('Postgres Strategy', function() {
-    this.timeout(100000) //leva o tempo que for até conseguir conectar ao Postgres, Infinity ou no caso 6000ms
+    this.timeout(Infinity) //leva o tempo que for até conseguir conectar ao Postgres, Infinity ou no caso 6000ms
     this.beforeAll(async function(){ 
         await context.connect() //variável db já é utilizada no método construtor
+        await context.delete()
         await context.create(MOCK_HEROI_ATUALIZAR)
     })
     it('conecta à base de dados do Postgres SQL', async() => {
@@ -63,5 +64,10 @@ describe('Postgres Strategy', function() {
          * o acesso ao nosso objeto ficará assim: novoItem.poder ou novoItem.nome
          * Show neh?
          */
+    })
+    it('deve remover um registro do BD pelo id', async () => {
+        const [item] = await context.read({})
+        const result = await context.delete(item.id)
+        assert.deepEqual(result, 1)
     })
 })

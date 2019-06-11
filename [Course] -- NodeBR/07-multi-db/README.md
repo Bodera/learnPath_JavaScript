@@ -153,3 +153,59 @@ DELETE FROM TB_HEROIS WHERE ID = 2;
 SELECT * FROM TB_HEROIS;
 ```
 #### Bancos de dados semi-estruturados
+Possuem estruturas dinâmicas e mais versáteis, adota semânticas que lembram a  programação orientada a objetos, e são eventualmente consistentes. No MongoDB trabalhamos utilizando a linguagem JavaScript. É importante mudar a forma de pensar na hora de fazer a modelagem desse tipo de servidores de dados.
+
+Por exemplo, tabelas são formalmente chamadas de coleções de objetos ou simplesmente coleções. E o MongoDB trabalha com uma estrutura um pouco diferente chamada __BSON__.
+
+Pelo terminal podemos acessar nosso servidor do MongoDB no container do Docker conforme apresentado.
+```bash
+docker ps #lista nossos containers
+docker exec -it 7512b93fda58 / #id do container do MongoDB
+    mongo -u sysadmin -p pneumoultramicroscopicossilicovulcanoconiotico / ##credenciais de acesso
+    --authenticationDatabase herois ##loga no banco de dados herois
+```
+
+```javascript
+show dbs //lista bases de dados
+use herois //altera o escopo para determinado banco de dados
+show collections //apresenta as coleções de documentos existentes no escopo atual
+db.herois.insert({ //acrescenta dados à nossa coleção
+    nome: 'Mulher-gavião',
+    poder: 'Metal Nth', 
+    dataNascimento: '1999-12-17'
+})
+db.herois.find() //para listar os documentos da coleção
+db.herois.find().pretty() //para formatar modelo JSON na saída do console
+for(let i=1; i < 1000; i++) {
+    db.herois.insert({ //acrescenta dados à nossa coleção utilizando um laço for
+    nome: `Clone=${i}`, //acrescentando o número do iterador no nome do registro
+    poder: 'Metal Nth', 
+    dataNascimento: '1999-12-17'
+    })
+}
+db.herois.count() //retorna o número total de documentos contidos na coleção
+db.herois.findOne() //retorna o primeiro documento da coleção
+db.herois.find().limit(90).sort({ nome -1 }) //para ordenar de mode decrescente adicionamos -1
+db.herois.find({}, { poder: 1, _id:0 }) //faça um listagem de todos os registros e filtre pela coluna poder, e também oculte a coluna _id
+```
+Então agora segue a relação das sintaxes para fixarmos as operações básicas de CRUD no MongoDB.
+```javascript
+//create
+db.herois.insert({ 
+    nome: 'Mulher-gavião',
+    poder: 'Metal Nth', 
+    dataNascimento: '1999-12-17'
+})
+
+//read
+db.herois.find()
+
+//update - Afetam um único registro por vez por default
+db.herois.update({ _id: ObjectId("5cfee88cca00aee9dd2c8184")}, { nome: 'Homem-gabirú' }) //oxente
+db.herois.update({ _id: ObjectId('5cfee88cca00aee9dd2c8184')},  {$set: {poder: 'Metal Nth', dataNascimento: '1999-12-17'}}) //começando a entender
+db.herois.update({ _id: ObjectId("5cfee88cca00aee9dd2c8184")}, { $set: {nome: 'Homem-gabiru'} }) // :)
+
+//delete
+db.herois.remove({}) //Deleta todos os registros da coleção
+db.herois.remove({_id: ObjectId("5cfee88cca00aee9dd2c8184")}) 
+```

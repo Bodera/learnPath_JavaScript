@@ -4,8 +4,8 @@
 // npm run tester:watcher
 
 const assert = require('assert') //validar consistência dos dados
-const Postgres = require('../db/strategies/postgresql')
-const Context = require('../db/strategies/base/contextStrategy')
+const Postgres = require('./../db/strategies/postgresql')
+const Context = require('./../db/strategies/base/contextStrategy')
 
 const context = new Context(new Postgres()) //instanciamos nossa classe Contexto passando os critérios da instância da classe Postgres
 const MOCK_HEROI_CADASTRAR = { //nosso template de entidade a ser cadastrada no banco sql
@@ -16,9 +16,9 @@ const MOCK_HEROI_ATUALIZAR = { //nosso template de entidade a ser cadastrada no 
     nome: 'Tocha humana',
     poder: 'Fogo'
 }
-describe('Postgres Strategy', function() {
+describe('Postgres Strategy', function () {
     this.timeout(Infinity) //leva o tempo que for até conseguir conectar ao Postgres, Infinity ou no caso 6000ms
-    this.beforeAll(async function(){ 
+    this.beforeAll(async() => { 
         await context.connect() //variável db já é utilizada no método construtor
         await context.delete()
         await context.create(MOCK_HEROI_ATUALIZAR)
@@ -39,7 +39,7 @@ describe('Postgres Strategy', function() {
         delete result.id
         assert.deepEqual(result, MOCK_HEROI_CADASTRAR)
     })
-    it('deve atualizar os atributos de uma entidade pelo id', async () => {
+    it('deve atualizar os atributos de uma entidade pelo id', async() => {
         const [itemAtualizar] = await context.read({nome: MOCK_HEROI_ATUALIZAR.nome})
         const novoItem = {
             ...MOCK_HEROI_ATUALIZAR,

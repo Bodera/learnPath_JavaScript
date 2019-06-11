@@ -161,7 +161,7 @@ Pelo terminal podemos acessar nosso servidor do MongoDB no container do Docker c
 ```bash
 docker ps #lista nossos containers
 docker exec -it 7512b93fda58 / #id do container do MongoDB
-    mongo -u sysadmin -p pneumoultramicroscopicossilicovulcanoconiotico / ##credenciais de acesso
+    mongo -u aquelebode -p interludiocoexistencial / ##credenciais de acesso
     --authenticationDatabase herois ##loga no banco de dados herois
 ```
 

@@ -28,6 +28,11 @@ class ICrud {
     isConnected() {
         throw new NotImplementedException()
     }
+    
+    //pos-implemented: método de conexão com servidor de dados
+    connect() {
+        throw new NotImplementedException()
+    }
 }
 
 //tornando nosso objeto visível para outros serviços JS

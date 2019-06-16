@@ -11,7 +11,7 @@ class ContextStrategy extends ICrud{
         return this._database.create(item)
     }
     
-    read(item) {
+    read(item, skip, limit) {
         return this._database.read(item)
     }
     

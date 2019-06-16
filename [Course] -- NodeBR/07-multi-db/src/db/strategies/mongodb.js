@@ -55,14 +55,25 @@ class MongoDB extends ICrud {
         connection.once('open', () =>  console.info `MongoDB Connection State: ${ connectionState[connection.readyState] }`,
                                        console.log('Parabéns, a conexão foi estabelecida com sucesso.'))
         this._driver = connection
+        this.defineModel()
     }
-    async create(item) {
-        const resultCadastrar = await model.create({
-            nome: 'Gelado',
-            poder: 'Jatos congelantes'
-        })
-        console.log('resultado de resultCadastrar: \n', resultCadastrar)
-        console.log('O item foi salvo em MongoDB')
+    create(item) {
+        return this._herois.create(item)
+        //const resultCadastrar = await model.create({
+        //    nome: 'Gelado',
+        //    poder: 'Jatos congelantes'
+        //})
+        //console.log('resultado de resultCadastrar: \n', resultCadastrar)
+        //console.log('O item foi salvo em MongoDB')
+    }
+    read(item, skip=0, limit=10) { //retorna 10 resultados a partir de uma página específica. Paginação o nome.
+        return this._herois.find(item).skip(skip).limit(limit) //item é o filtro
+    }
+    update(id, item) {
+        return this._herois.updateOne({ _id: id}, {$set: item})
+    }
+    delete(id) {
+        return this._herois.deleteOne({ _id: id})
     }
 }
 

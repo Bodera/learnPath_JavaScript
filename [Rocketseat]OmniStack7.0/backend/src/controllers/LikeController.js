@@ -8,7 +8,7 @@ module.exports = {
         post.likes += 1
         await post.save()        
 
-        req.io.emit('Novo like', post)//novo event emitter que notifica em tempo real usuários conectados de um novo like
+        req.io.emit('like', post)//novo event emitter que notifica em tempo real usuários conectados de um novo like
 
         return res.json(post)
     }

@@ -37,7 +37,7 @@ module.exports = {
             image: rszdFileName
         })
 
-        req.io.emit('Novo post', post)//novo event emitter que notifica em tempo real usuários conectados de um novo post
+        req.io.emit('post', post)//novo event emitter que notifica em tempo real usuários conectados de um novo post
 
         return res.json(post)
     }

@@ -1,0 +1,36 @@
+@charset "UTF-8";
+
+form#new-post {
+    width: 100%;
+    max-width: 580px;
+    margin: 30px auto 0;
+    padding: 30px;
+    background: #f7f9ef;
+    border: 1px solid snow;
+
+    display: flex;
+    flex-direction: column;
+}
+
+form#new-post input {
+    margin-bottom: 10px;
+}
+
+form#new-post input[type=text] {
+    height: 38px;
+    border-radius: 4px;
+    border: 1px solid snow;
+    padding: 0 20px;
+    font-size: 14px;
+}
+
+form#new-post button {
+    padding: 10px 20px;
+    border-radius: 4px;
+    border: 0;
+    background: #71bc;
+    color: #f7f9ef;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+}

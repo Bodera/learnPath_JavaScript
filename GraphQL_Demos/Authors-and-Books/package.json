@@ -4,6 +4,7 @@
   "description": "Web Dev Simplified tutorial: learn GraphQL in 40 minutes.",
   "main": "server.js",
   "scripts": {
+    "devStart": "nodemon server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [

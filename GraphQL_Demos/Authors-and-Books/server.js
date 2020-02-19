@@ -13,7 +13,7 @@ const schema = new GraphQLSchema({
     fields: () => ({
       message: { 
         type: GraphQLString,
-        resolve: () => 'Grretings from GraphQL side!'  
+        resolve: () => 'Greetings from GraphQL side!'  
       }
     })
   })

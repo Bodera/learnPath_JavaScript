@@ -131,11 +131,11 @@ const AggregatesAuthor = new GraphQLObjectType({
 
 const RootQueryType = new GraphQLObjectType({
   name: 'RootQuery',
-  description: 'Top level query',
+  description: 'Stores all queries.',
   fields: () => ({
     book: {
       type: BookType,
-      description: 'Returns a single book',
+      description: 'Returns a single book by it\'s id.',
       args: {
         id: {type: GraphQLInt}
       },
@@ -146,6 +146,14 @@ const RootQueryType = new GraphQLObjectType({
       description: 'Returns the list of all books.',
       resolve: () => books
     },
+    author: {
+      type: AuthorType,
+      description: 'Returns a single author by it\'s id.',
+      args: {
+        id: {type: GraphQLInt}
+      },
+      resolve: (parent, args) => authors.find(author => author.id === args.id)
+    },
     authors: {
       type: new GraphQLList(AuthorType),
       description: 'Returns the list of all authors.',
@@ -154,8 +162,54 @@ const RootQueryType = new GraphQLObjectType({
   })
 })
 
+const RootMutationType = new GraphQLObjectType ({
+  name: 'RootMutation',
+  description: 'Stores all mutations',
+  fields: () => ({
+    addBook: {
+      type: BookType,
+      description: 'This mutation performs an update that adds a new book.',
+      args: {
+        title: {type: GraphQLNonNull(GraphQLString)},
+        authorId: {type: GraphQLNonNull(GraphQLInt)}
+      },
+      resolve: (parent, args) => {
+        //when work with a database, the id increments by default
+        const book = {
+          id: books.length + 1,
+          title: args.title,
+          authorId: args.authorId
+        }
+        books.push(book)
+        return book
+      }
+    },
+    addAuthor: {
+      type: AuthorType,
+      description: 'This mutation performs an update that adds a new author.',
+      args: {
+        name: {type: GraphQLNonNull(GraphQLString)},
+        birth_date: {type: GraphQLNonNull(GraphQLDate)},
+        nationality: {type: GraphQLNonNull(GraphQLString)}
+      },
+      resolve: (parent, args) => {
+        //when work with a database, the id increments by default
+        const author = {
+          id: authors.length + 1,
+          name: args.name,
+          birth_date: args.birth_date,
+          nationality: args.nationality
+        }
+        authors.push(author)
+        return author
+      }
+    }
+  })
+})
+
 const schema = new GraphQLSchema({
-  query: RootQueryType
+  query: RootQueryType,
+  mutation: RootMutationType
 })
 
 app.use('/graphql', expressGraphQL({

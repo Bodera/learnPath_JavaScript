@@ -6,22 +6,35 @@ const {
   GraphQLString,
   GraphQLList,
   GraphQLInt,
-  GraphQLDate,
   GraphQLNonNull
 } = require('graphql')
+const {
+  GraphQLDate,
+  //GraphQLTime,
+  //GraphQLDateTime
+} = require('graphql-iso-date')
 const app = express()
 
 
 const authors = [
-  {id: 1, name: 'Agatha Christie', birth_date: '15/09/1890', nationality: 'British'},
-  {id: 2, name: 'Mikhail Bulgakov', birth_date: '15/05/1891', nationality: 'Ukrainian'},
-  {id: 3, name: 'Beatrix Potter', birth_date: '28/07/1866', nationality: 'British'},
-  {id: 4, name: 'Jeffrey Archer', birth_date: '15/04/1940', nationality: 'British'},
-  {id: 5, name: 'Stephen Covey', birth_date: '24/10/1932', nationality: 'American'},
-  {id: 6, name: 'Eric Blair', birth_date: '25/06/1903', nationality: 'British'},
-  {id: 7, name: 'Winston Churchill', birth_date: '30/11/1874', nationality: 'British'},
-  {id: 8, name: 'Machado de Assis', birth_date: '21/06/1839', nationality: 'Brazilian'},
-  {id: 9, name: 'Adolfo Caminha', birth_date: '29/05/1867', nationality: 'Brazilian'}
+  {id: 1, name: 'Agatha Christie',
+   birth_date: '1890-09-15', nationality: 'British'},
+  {id: 2, name: 'Mikhail Bulgakov',
+   birth_date: '1891-05-15', nationality: 'Ukrainian'},
+  {id: 3, name: 'Beatrix Potter',
+   birth_date: '1866-07-28', nationality: 'British'},
+  {id: 4, name: 'Jeffrey Archer',
+   birth_date: '1940-04-15', nationality: 'British'},
+  {id: 5, name: 'Stephen Covey',
+   birth_date: '1932-10-24', nationality: 'American'},
+  {id: 6, name: 'Eric Blair',
+   birth_date: '1903-06-23', nationality: 'British'},
+  {id: 7, name: 'Winston Churchill',
+   birth_date: '1874-11-30', nationality: 'British'},
+  {id: 8, name: 'Machado de Assis',
+   birth_date: '1839-06-21', nationality: 'Brazilian'},
+  {id: 9, name: 'Adolfo Caminha',
+   birth_date: '1867-05-29', nationality: 'Brazilian'}
 ]
 
 const books = [
@@ -47,6 +60,31 @@ const books = [
   {id: 20, title: 'A Normalista', authorId: 9}
 ]
 
+const BookType = new GraphQLObjectType({
+  name: 'Book',
+  description: 'Book object represents a book written by an author.',
+  fields: () => ({
+    id: {
+      type: GraphQLNonNull(GraphQLInt),
+      description: 'Book\'s numerical identification.'
+    },
+    title: {
+      type: GraphQLNonNull(GraphQLString),
+      description: 'Book\'s title.'
+    },
+    authorId: {
+      type: GraphQLNonNull(GraphQLInt),
+      description: 'Key field to establish relation between a book and an author.'
+    },
+    author: {
+      type: AuthorType,
+      description: 'Textual idetification of the book\'s author.',
+      resolve: (book) => {
+        return authors.find(author => author.id === book.authorId)
+      }
+    }
+  })
+})
 
 const AuthorType = new GraphQLObjectType({
   name: 'Author',
@@ -61,7 +99,7 @@ const AuthorType = new GraphQLObjectType({
       description: 'Author\'s name'
     },
     birth_date: {
-      type: GraphQLNonNull(GraphQLString),
+      type: GraphQLNonNull(GraphQLDate),
       description: 'Author\'s birth date' 
     },
     nationality: {
@@ -69,54 +107,47 @@ const AuthorType = new GraphQLObjectType({
       description: 'Author\'s nationality'
     },
     books: {
-      type: BookType,
-      description: 'Books written by the author',
+      type: new GraphQLList(BookType),
+      description: 'Return a list with details of all books written by the author',
       resolve: (author) => {
-        return books.
-                  filter(book => book.authorId === author.id)
-        }
+        return books.filter(book => book.authorId === author.id)
+      }
     }
   })
 })
 
-const BookType = new GraphQLObjectType({
-  name: 'Book',
-  description: 'This object stands for a book written by an author object',
+/*
+const AggregatesAuthor = new GraphQLObjectType({
+  name: 'Aggregations for author.',
+  description: 'Aggregate functions fields for Author object.',
   fields: () => ({
-    id: {
+    countof_books: {
       type: GraphQLNonNull(GraphQLInt),
-      description: 'Book\'s numerical identification'
-    },
-    title: {
-      type: GraphQLNonNull(GraphQLString),
-      description: 'Book\'s title'
-    },
-    authorId: {
-      type: GraphQLNonNull(GraphQLInt),
-      description: 'Key field to establish relation between a book and an author' 
-    },
-    author: {
-        type: AuthorType,
-        description: 'Name of the author of the book',
-        resolve: (book) => {
-          return authors.
-                    find(author => author.id === book.authorId)
-        }
+      description: 'Returns the count of books in the database written by the '
     }
   })
 })
+*/
 
 const RootQueryType = new GraphQLObjectType({
   name: 'RootQuery',
   description: 'Top level query',
   fields: () => ({
+    book: {
+      type: BookType,
+      description: 'Returns a single book',
+      args: {
+        id: {type: GraphQLInt}
+      },
+      resolve: (parent, args) => books.find(book => book.id === args.id)
+    },
     books: { 
-      type: GraphQLList(BookType),
+      type: new GraphQLList(BookType),
       description: 'Returns the list of all books.',
       resolve: () => books
     },
     authors: {
-      type: GraphQLList(AuthorType),
+      type: new GraphQLList(AuthorType),
       description: 'Returns the list of all authors.',
       resolve: () => authors
     }
@@ -127,12 +158,10 @@ const schema = new GraphQLSchema({
   query: RootQueryType
 })
 
-app.use(
-  '/graphql',
-  expressGraphQL({
+app.use('/graphql', expressGraphQL({
     schema: schema,
     graphiql: true
   })
 )
 
-app.listen(8083, () => console.log('Server is up!'+books[2].title))
+app.listen(8083, () => console.log('Server is up!'))

@@ -34,3 +34,12 @@ $ npx standard
 ```
 
 Created `.gitignore` file.
+
+Commit changes:
+
+```bash
+$ git add .gitignore
+$ git commit .gitignore -m "Added node_modules to gitignore"
+$ git add -A
+$ git commit -a -m "Added standard npm package"
+```

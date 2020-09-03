@@ -15,5 +15,8 @@
     "api"
   ],
   "author": "Bodera",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "standart": "^6.1.0"
+  }
 }

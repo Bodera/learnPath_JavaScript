@@ -1,0 +1,19 @@
+{
+  "name": "nodejs_tdd",
+  "version": "1.0.0",
+  "description": "API built following TDD and Clean Architecture practices.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Bodera/learnPath_JavaScript/tree/main/Nodejs_TDD"
+  },
+  "keywords": [
+    "tdd",
+    "api"
+  ],
+  "author": "Bodera",
+  "license": "ISC"
+}

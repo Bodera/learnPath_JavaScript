@@ -6,6 +6,17 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "lint-staged": {
+    "*.js": [
+      "standard --fix",
+      "git add"
+    ]
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/Bodera/learnPath_JavaScript/tree/main/Nodejs_TDD"
@@ -17,6 +28,8 @@
   "author": "Bodera",
   "license": "ISC",
   "devDependencies": {
+    "husky": "^4.2.5",
+    "lint-staged": "^10.3.0",
     "standart": "^6.1.0"
   }
 }

@@ -14,32 +14,23 @@ Initialize the project setup:
 $ npm init
 ```
 
-Arquivo `package.json` obtido:
-```json
-{
-  "name": "nodejs_tdd",
-  "version": "1.0.0",
-  "description": "API built following TDD and Clean Architecture practices.",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/Bodera/learnPath_JavaScript/tree/main/Nodejs_TDD"
-  },
-  "keywords": [
-    "tdd",
-    "api"
-  ],
-  "author": "Bodera",
-  "license": "ISC"
-}
-```
-
 Time to commit changes:
 
 ```bash
 $ git add -A
 $ git commit -a -m "Initialized npm"
 ```
+
+We now add our first dependency for development environment only, it is a JavaScript Standart Style package:
+
+```bash
+$ npm i standard -D
+```
+
+To inspect JS syntax in the project run:
+
+```javascript
+$ npx standard
+```
+
+Created `.gitignore` file.

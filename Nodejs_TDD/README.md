@@ -21,7 +21,7 @@ $ git add -A
 $ git commit -a -m "Initialized npm"
 ```
 
-We now add our first dependency for development environment only, it is a JavaScript Standart Style package:
+We now add our first dependency for development environment only, it is a JavaScript Standart Style module:
 
 ```bash
 $ npm i standard -D
@@ -42,4 +42,64 @@ $ git add .gitignore
 $ git commit .gitignore -m "Added node_modules to gitignore"
 $ git add -A
 $ git commit -a -m "Added standard npm package"
+```
+
+Add another dependency for development environment, it is a module to perform lints on staged Git files:
+
+```bash
+$ npm i lint-staged -D
+```
+
+Time do add a script into our `package.json`. For every javascript file in our stage area, we run the check style lint:
+
+```json
+  "lint-staged": {
+    "*.js": [
+      "standard"
+    ]
+  }
+```
+
+To execute the script is simple as this:
+
+```bash
+$ npx lint-staged
+```
+
+Add the last version of a new dependency for development environment, it provides Git hooks in order to prevent bad commits:
+
+```bash
+$ npm i husky@latest -D
+```
+
+Time do add a new script into our `package.json`. Runs a specific script before a commit attempt:
+
+```json
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  }
+```
+
+Notice how each module is working together with the other one so far.
+
+We can improve our `lint-staged` script like this:
+
+```json
+  "lint-staged": {
+    "*.js": [
+      "standard --fix",
+      "git add"
+    ]
+  }
+```
+
+Time to commit changes:
+
+```bash
+$ git add README.md
+$ git commit README.md -m "Update README"
+$ git add -A
+$ git commit -a -m "Added husky and lint-staged modules"
 ```

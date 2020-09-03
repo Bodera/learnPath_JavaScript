@@ -59,4 +59,11 @@ $ node -v
 $ npm i npm -g
 ```
 
+* Deactivate some node version then uninstall it.
+
+```bash
+$ npm deactivate
+$ npm uninstall 13.8.0
+```
+
 ## The end

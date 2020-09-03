@@ -35,6 +35,12 @@ $ npx standard
 
 Created `.gitignore` file.
 
+Check stage area status:
+
+```bash
+$ git status -s
+```
+
 Commit changes:
 
 ```bash
@@ -102,4 +108,27 @@ $ git add README.md
 $ git commit README.md -m "Update README"
 $ git add -A
 $ git commit -a -m "Added husky and lint-staged modules"
+```
+
+Add other dependency for development environment, it is a JavaScript testing framework:
+
+```bash
+$ npm i jest -D
+```
+
+Once added to our project, let's configure `jest` in our machine:
+
+```bash
+$ node_modules/.bin/jest --init
+```
+
+Answer the questions like this: Y, node, Y, v8, N. After that a file named `jest.config.js` will be created. The coverage informs how much (in percentage) of our code is covered by tests.
+
+Time to commit changes:
+
+```bash
+$ git add README.md
+$ git commit README.md -m "Update README"
+$ git add -A
+$ git commit -a -m "Added jest module"
 ```

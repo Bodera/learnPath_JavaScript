@@ -4,9 +4,13 @@ In this project we will work programming concepts such as clean architecture and
 
 Course provided by [Rodrigo Manguinho](https://www.linkedin.com/in/rmanguinho/) available for free [here](https://www.youtube.com/playlist?list=PL9aKtVrF05DyEwK5kdvzrYXFdpZfj1dsG).
 
-##### Notes from video 1
+## Summary
 
-We start with an README and a LICENSE.
+- [Lesson No. \#1](https://github.com/Bodera/learnPath_JavaScript/tree/main/Nodejs_TDD/#notes-from-video-1)
+
+### Notes from video 1
+
+We start with a README and a LICENSE.
 
 Initialize the project setup:
 
@@ -138,3 +142,15 @@ Before end this lesson, let's create short configuration files for the scripts w
 - *.lintstagedrc.json* will store the object of the old *lint-staged* script.
 - *.huskyrc.json* will store the object of the old *husky* script.
 
+Time to commit changes:
+
+```bash
+$ git add README.md
+$ git commit README.md -m "Update README"
+$ git add -A
+$ git commit -a -m "Uploaded config files to keep package.json clean"
+```
+
+By pushing short and concise commits to our branch we've creat milestones for easy rollback or recovery to our project.
+
+Lesson No. \#1 ends here.

@@ -132,3 +132,9 @@ $ git commit README.md -m "Update README"
 $ git add -A
 $ git commit -a -m "Added jest module"
 ```
+
+Before end this lesson, let's create short configuration files for the scripts we have built in the `package.json` so this file will stay cleaner.
+
+- *.lintstagedrc.json* will store the object of the old *lint-staged* script.
+- *.huskyrc.json* will store the object of the old *husky* script.
+

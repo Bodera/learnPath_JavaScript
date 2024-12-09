@@ -13,10 +13,16 @@ const listArr = []
 
 // Function to check item is not duplicate
 function checkDuplicate() {
-    
-    /* ⚠️ You need to add code to this function! ⚠️*/ 
-    
-    const itemText = itemInput.value
+    const itemText = sanitazeInput(itemInput.value)
+
+    let alreadyExists = listArr.some(item => item.toLowerCase() === itemText.toLowerCase())
+    let emptyItem = itemText.length === 0
+
+    if (emptyItem || alreadyExists) {
+        renderList()
+        return
+    }
+
     listArr.push(itemText)
     renderList()
 }
@@ -41,3 +47,9 @@ itemInput.addEventListener('keypress', (event) => {
         checkDuplicate()
     }
 })
+
+// Function to sanitize user input
+function sanitazeInput(input) {
+    input = input.replace(/\s+/g, ' ') // Replace multiple spaces with a single space
+    return input.trim()
+}

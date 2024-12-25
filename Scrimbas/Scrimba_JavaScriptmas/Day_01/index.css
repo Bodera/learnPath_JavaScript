@@ -90,6 +90,9 @@ body {
     border-radius: 4px;
     text-align: left;
     font-size: 1.9em;
-    font-family: 'Caveat'
+    font-family: 'Caveat';
   }
   
+  li {
+    justify-content: space-between; /* Push the content to the sides */
+  }

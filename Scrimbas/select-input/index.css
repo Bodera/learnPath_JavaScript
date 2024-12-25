@@ -1,0 +1,51 @@
+html, body {
+    margin: 0;
+    padding: 0;
+}
+
+body, button {
+    font-family: 'Poppins'
+}
+
+main {
+    background-image: url('/fantasybg.png');
+    background-size: cover;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.container {
+    background-color: rgba(255, 255, 255, .7);
+    border-radius: 5px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 32px; 
+}
+
+form {
+    width: 230px;
+}
+
+label {
+    font-weight: 700;
+    color: #222;
+}
+
+select {
+    margin: 10px 0;
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px; 
+}
+
+button {
+    width: 100%;
+    border: 0;
+    padding: 10px;
+    border-radius: 5px;
+    background-color: #444;
+    color: #ffffff;
+}
